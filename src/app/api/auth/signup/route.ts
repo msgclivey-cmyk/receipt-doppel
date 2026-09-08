@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { createSession, hashPassword } from "@/lib/auth";
+import { createSession, hashPassword, publicUser } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -73,7 +73,11 @@ export async function POST(req: Request) {
       brandId: brand.id,
       brandSlug: brand.slug,
     });
-    return NextResponse.json({ ok: true, user, brand });
+    return NextResponse.json({
+      ok: true,
+      user: publicUser(user),
+      brand,
+    });
   } catch {
     return NextResponse.json({ error: "Signup failed." }, { status: 500 });
   }

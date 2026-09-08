@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { createSession, verifyPassword } from "@/lib/auth";
+import { createSession, publicUser, verifyPassword } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({
       ok: true,
-      user: { id: user.id, email: user.email, name: user.name },
+      user: publicUser(user),
       brand,
     });
   } catch {
