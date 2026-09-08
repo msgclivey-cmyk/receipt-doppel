@@ -37,7 +37,8 @@ Seeded brand: **Acme Brew Co.** (`/proof/acme-brew`).
 |-------|------|
 | `/` | Marketing landing (hero, before/after proof, how it works) |
 | `/pricing` | Proof / Guard / Enterprise |
-| `/login` `/signup` | Demo auth (JWT cookie) |
+| `/review/[token]` | Post-purchase thank-you (one sentence, skip allowed) |
+| `/review/find/[brandSlug]` | Lost-link lookup with email + order number |
 | `/proof/[brandSlug]` | Public proof wall |
 | `/badge-demo` | Trust badge on a fake PDP |
 | `/embed/[brandSlug]` | Embeddable proof iframe |
@@ -49,6 +50,9 @@ Seeded brand: **Acme Brew Co.** (`/proof/acme-brew`).
 
 - `POST /api/auth/login|signup|logout` · `GET /api/auth/me`
 - `GET|PATCH /api/testimonials`
+- `GET|POST /api/charges` · `POST /api/charges/[id]/invite` · `PATCH /api/charges/[id]/status`
+- `POST /api/reviews` (submit) · `PUT /api/reviews` (lost thank-you lookup)
+- `GET /api/proof?slug=`
 - `GET|PATCH /api/threats`
 - `GET /api/proof?slug=`
 - `POST|DELETE /api/payments/sync` (demo connect, no real secrets)
@@ -60,4 +64,4 @@ Next.js App Router · TypeScript · Tailwind · shadcn-style Radix UI · Prisma 
 
 ## Notes
 
-Payment connect is a **demo**. It stores a fake account id and can import one unpublished payment-bound testimonial — no Stripe/Paddle API keys required.
+Payment connect is a **demo**. It stores a fake account id. Record a paid order in the console to mint a thank-you URL (Stripe success page / cafe QR). Buyers are not asked to create an account. The quote cannot publish unless the charge is still `paid`.

@@ -25,7 +25,11 @@ export default async function AppLayout({
   return (
     <div className="flex min-h-screen bg-[var(--rd-mist)]">
       <div className="sticky top-0 hidden h-screen md:block">
-        <AppSidebar brandName={ctx.brand.name} openThreats={openThreats} />
+        <AppSidebar
+          brandName={ctx.brand.name}
+          brandSlug={ctx.brand.slug}
+          openThreats={openThreats}
+        />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between border-b border-[var(--rd-line)] bg-white px-4 py-3 md:hidden">

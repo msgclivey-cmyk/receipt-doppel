@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TestimonialPublishList } from "@/components/app/testimonial-list";
+import { RequestReviewPanel } from "@/components/app/request-review";
+import { maskEmail } from "@/lib/reviews";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +28,7 @@ export default async function BrandConsolePage() {
   if (!ctx?.brand) redirect("/login");
   const brand = ctx.brand;
 
-  const [testimonials, threats, verifiedCount, openThreats, takedowns] =
+  const [testimonials, threats, verifiedCount, openThreats, takedowns, charges] =
     await Promise.all([
       prisma.testimonial.findMany({
         where: { brandId: brand.id },
@@ -49,6 +51,15 @@ export default async function BrandConsolePage() {
       }),
       prisma.threat.count({
         where: { brandId: brand.id, status: "resolved" },
+      }),
+      prisma.charge.findMany({
+        where: { brandId: brand.id },
+        include: {
+          testimonial: true,
+          invites: { orderBy: { createdAt: "desc" }, take: 1 },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 50,
       }),
     ]);
 
@@ -98,6 +109,30 @@ export default async function BrandConsolePage() {
         </div>
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>After they pay</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RequestReviewPanel
+            paymentConnected={brand.paymentConnected}
+            provider={brand.paymentProvider}
+            initialCharges={charges.map((charge) => ({
+              id: charge.id,
+              orderRef: charge.orderRef,
+              amountCents: charge.amountCents,
+              currency: charge.currency,
+              customerName: charge.customerName,
+              customerEmailMask: maskEmail(charge.customerEmail),
+              provider: charge.provider,
+              status: charge.status,
+              hasReview: Boolean(charge.testimonial),
+              reviewPublished: charge.testimonial?.published ?? null,
+            }))}
+          />
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 xl:grid-cols-2">
         <Card>
           <CardHeader>
@@ -108,6 +143,7 @@ export default async function BrandConsolePage() {
           </CardHeader>
           <CardContent>
             <TestimonialPublishList
+              wallHref={`/proof/${brand.slug}`}
               initial={testimonials.map((t) => ({
                 ...t,
                 createdAt: t.createdAt.toISOString(),

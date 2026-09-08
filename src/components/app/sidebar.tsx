@@ -15,19 +15,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { logoutAction } from "@/lib/actions";
 
-const nav = [
-  { href: "/app", label: "Live testimonials", icon: MessageSquareQuote },
-  { href: "/app#threats", label: "Impersonation queue", icon: ShieldAlert },
-  { href: "/proof/acme-brew", label: "Proof Wall", icon: LayoutDashboard },
-  { href: "/app/settings", label: "Integrations", icon: Puzzle },
-  { href: "/app/settings", label: "Settings", icon: Settings, match: "/app/settings" },
-];
-
 export function AppSidebar({
   brandName,
+  brandSlug,
   openThreats,
 }: {
   brandName: string;
+  brandSlug: string;
   openThreats: number;
 }) {
   const pathname = usePathname();
@@ -39,7 +33,13 @@ export function AppSidebar({
         <p className="mt-2 truncate text-xs text-[var(--rd-muted)]">{brandName}</p>
       </div>
       <nav className="flex-1 space-y-1 p-3">
-        {nav.map((item) => {
+        {[
+          { href: "/app", label: "Live testimonials", icon: MessageSquareQuote, match: undefined as string | undefined },
+          { href: "/app#threats", label: "Impersonation queue", icon: ShieldAlert, match: undefined },
+          { href: `/proof/${brandSlug}`, label: "Proof Wall", icon: LayoutDashboard, match: undefined },
+          { href: "/app/settings", label: "Integrations", icon: Puzzle, match: undefined },
+          { href: "/app/settings", label: "Settings", icon: Settings, match: "/app/settings" },
+        ].map((item) => {
           const Icon = item.icon;
           const active =
             item.match != null

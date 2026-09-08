@@ -110,7 +110,8 @@ export function SettingsClient({
           Settings
         </h1>
         <p className="mt-1 text-[var(--rd-muted)]">
-          Demo payment connect, brand profile, and embed codes.
+          Demo payment connect, brand profile, and embed codes. Review collection
+          happens on the thank-you page after a paid order — not as a separate chore.
         </p>
       </div>
 
@@ -122,8 +123,8 @@ export function SettingsClient({
           <CardHeader>
             <CardTitle>Payment connect (demo)</CardTitle>
             <p className="text-sm text-[var(--rd-muted)]">
-              No real Stripe or Paddle secrets. Connect simulates OAuth and syncs
-              a demo payment-bound review.
+              No real Stripe or Paddle secrets. Connect stores a demo account so
+              you can create a thank-you page for a paid order.
             </p>
           </CardHeader>
           <CardContent className="space-y-4">

@@ -88,6 +88,16 @@ export default async function ProofWallPage({
           </div>
           <ProofFilters brandSlug={brand.slug} category={category} />
         </div>
+        <p className="mt-4 text-sm text-[var(--rd-muted)]">
+          Paid this brand and lost the thank-you page?{" "}
+          <Link
+            href={`/review/find/${brand.slug}`}
+            className="font-semibold text-[var(--rd-forest)] hover:underline"
+          >
+            Look up your order
+          </Link>
+          .
+        </p>
 
         {testimonials.length === 0 ? (
           <Card className="mt-10">
