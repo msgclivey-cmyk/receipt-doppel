@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  brands       Brand[]
+}
+
+model Brand {
+  id               String        @id @default(cuid())
+  name             String
+  slug             String        @unique
+  domain           String
+  tagline          String?
+  industry         String
+  logoInitials     String
+  protectionActive Boolean       @default(true)
+  paymentProvider  String?
+  paymentConnected Boolean       @default(false)
+  paymentAccountId String?
+  ownerId          String
+  owner            User          @relation(fields: [ownerId], references: [id])
+  testimonials     Testimonial[]
+  threats          Threat[]
+  createdAt        DateTime      @default(now())
+}
+
+model Testimonial {
+  id              String   @id @default(cuid())
+  brandId         String
+  brand           Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  authorName      String
+  authorTitle     String?
+  authorInitials  String
+  authorEmailMask String?
+  body            String
+  rating          Int      @default(5)
+  amountCents     Int
+  currency        String   @default("USD")
+  provider        String
+  orderRef        String
+  published       Boolean  @default(true)
+  brandSafe       Boolean  @default(true)
+  category        String
+  createdAt       DateTime @default(now())
+}
+
+model Threat {
+  id           String   @id @default(cuid())
+  brandId      String
+  brand        Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  title        String
+  type         String
+  severity     String
+  status       String   @default("open")
+  url          String?
+  summary      String
+  evidenceJson String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
