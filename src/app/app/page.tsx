@@ -111,12 +111,13 @@ export default async function BrandConsolePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>After they pay</CardTitle>
+          <CardTitle>Ask after they&apos;ve used it</CardTitle>
         </CardHeader>
         <CardContent>
           <RequestReviewPanel
             paymentConnected={brand.paymentConnected}
             provider={brand.paymentProvider}
+            reviewAskAfterDays={brand.reviewAskAfterDays}
             initialCharges={charges.map((charge) => ({
               id: charge.id,
               orderRef: charge.orderRef,
@@ -128,6 +129,16 @@ export default async function BrandConsolePage() {
               status: charge.status,
               hasReview: Boolean(charge.testimonial),
               reviewPublished: charge.testimonial?.published ?? null,
+              askAfterAt: charge.askAfterAt.toISOString(),
+              lastReviewEmailAt: charge.lastReviewEmailAt?.toISOString() ?? null,
+              ready: charge.askAfterAt.getTime() <= Date.now(),
+              asked:
+                Boolean(charge.lastReviewEmailAt) ||
+                Boolean(
+                  charge.invites[0] &&
+                    !charge.invites[0].usedAt &&
+                    charge.invites[0].expiresAt.getTime() > Date.now(),
+                ),
             }))}
           />
         </CardContent>

@@ -20,9 +20,9 @@ const steps = [
   {
     n: "01",
     title: "Connect the payment graph",
-    body: "Stripe or Paddle. After they pay, the thank-you page is already theirs — we do not send them on a separate review quest.",
+    body: "Stripe or Paddle. After they pay, we wait. Checkout is not a review — they have not used the product yet.",
     detail:
-      "The form is one sentence with Skip. Same link can sit on a cafe QR. No extra account.",
+      "When they have had time, one polite email. One sentence. Skip is allowed. No extra account.",
   },
   {
     n: "02",
@@ -67,8 +67,12 @@ const jobs = [
 
 const faqs = [
   {
+    q: "Do buyers review right after they pay?",
+    a: "No. They have not used the product yet. Asking on the thank-you page is a review of checkout, not of the thing they bought. We wait, then send one polite email. Skip is allowed.",
+  },
+  {
     q: "How is this different from screenshots or a review widget?",
-    a: "Screenshots and most widgets take anyone’s word. Receipt Doppel only opens a review on the thank-you page for a real charge. Skip is allowed. Nothing publishes without that payment.",
+    a: "Screenshots and most widgets take anyone’s word. Receipt Doppel only opens a review for a real paid charge, after the buyer has had time with the order. Nothing publishes without that payment.",
   },
   {
     q: "Do I have to use Stripe?",

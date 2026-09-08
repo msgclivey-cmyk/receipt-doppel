@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { chargeAllowsReview, issueInvite } from "@/lib/reviews";
+import {
+  chargeAllowsReview,
+  chargeReviewTooSoon,
+  issueInvite,
+} from "@/lib/reviews";
 
 export async function POST(
   _req: Request,
@@ -19,7 +23,7 @@ export async function POST(
   if (!charge) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  const blocked = chargeAllowsReview(charge);
+  const blocked = chargeAllowsReview(charge) || chargeReviewTooSoon(charge);
   if (blocked) {
     return NextResponse.json({ error: blocked }, { status: 409 });
   }

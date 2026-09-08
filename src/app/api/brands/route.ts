@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
+import { clampAskAfterDays } from "@/lib/reviews";
 
 export async function PATCH(req: Request) {
   const ctx = await requireUser();
@@ -20,6 +21,9 @@ export async function PATCH(req: Request) {
           : {}),
         ...(typeof body.protectionActive === "boolean"
           ? { protectionActive: body.protectionActive }
+          : {}),
+        ...(body.reviewAskAfterDays !== undefined
+          ? { reviewAskAfterDays: clampAskAfterDays(body.reviewAskAfterDays) }
           : {}),
       },
     });

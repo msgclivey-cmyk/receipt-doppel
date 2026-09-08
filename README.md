@@ -37,21 +37,21 @@ Seeded brand: **Acme Brew Co.** (`/proof/acme-brew`).
 |-------|------|
 | `/` | Marketing landing (hero, before/after proof, how it works) |
 | `/pricing` | Proof / Guard / Enterprise |
-| `/review/[token]` | Post-purchase thank-you (one sentence, skip allowed) |
-| `/review/find/[brandSlug]` | Lost-link lookup with email + order number |
+| `/review/[token]` | Review form after they have used the product (one sentence, skip allowed) |
+| `/review/find/[brandSlug]` | Lost-email lookup with email + order number |
 | `/proof/[brandSlug]` | Public proof wall |
 | `/badge-demo` | Trust badge on a fake PDP |
 | `/embed/[brandSlug]` | Embeddable proof iframe |
 | `/app` | Brand console (testimonials + threat queue) |
 | `/app/threats/[id]` | Threat detail + takedown |
-| `/app/settings` | Demo Stripe/Paddle connect, profile, embed codes |
+| `/app/settings` | Demo Stripe/Paddle connect, wait days, embed codes |
 
 ## API
 
 - `POST /api/auth/login|signup|logout` · `GET /api/auth/me`
 - `GET|PATCH /api/testimonials`
-- `GET|POST /api/charges` · `POST /api/charges/[id]/invite` · `PATCH /api/charges/[id]/status`
-- `POST /api/reviews` (submit) · `PUT /api/reviews` (lost thank-you lookup)
+- `GET|POST /api/charges` · `POST /api/charges/[id]/ask` · `POST /api/charges/[id]/invite` · `PATCH /api/charges/[id]/status`
+- `POST /api/reviews` (submit) · `PUT /api/reviews` (lost-email lookup)
 - `GET /api/proof?slug=`
 - `GET|PATCH /api/threats`
 - `GET /api/proof?slug=`
@@ -64,4 +64,4 @@ Next.js App Router · TypeScript · Tailwind · shadcn-style Radix UI · Prisma 
 
 ## Notes
 
-Payment connect is a **demo**. It stores a fake account id. Record a paid order in the console to mint a thank-you URL (Stripe success page / cafe QR). Buyers are not asked to create an account. The quote cannot publish unless the charge is still `paid`.
+Payment connect is a **demo**. It stores a fake account id. Record a paid order in the console. Do **not** collect a review at checkout — they have not used the product yet. After the wait (default 7 days), email a polite ask from the console (`RESEND_API_KEY` + `REVIEW_FROM_EMAIL`, or a mail draft if those are unset). Buyers are not asked to create an account. The quote cannot publish unless the charge is still `paid`.

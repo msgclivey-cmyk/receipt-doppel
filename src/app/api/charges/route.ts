@@ -1,10 +1,53 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { issueInvite, maskEmail } from "@/lib/reviews";
+import { computeAskAfterAt, maskEmail } from "@/lib/reviews";
 
 function randomOrderRef() {
   return String(Math.floor(40000 + Math.random() * 50000));
+}
+
+function serializeCharge(charge: {
+  id: string;
+  orderRef: string;
+  amountCents: number;
+  currency: string;
+  customerName: string;
+  customerEmail: string;
+  provider: string;
+  status: string;
+  askAfterAt: Date;
+  lastReviewEmailAt: Date | null;
+  paidAt: Date;
+  testimonial: { published: boolean } | null;
+  invites: { expiresAt: Date; usedAt: Date | null }[];
+}) {
+  return {
+    id: charge.id,
+    orderRef: charge.orderRef,
+    amountCents: charge.amountCents,
+    currency: charge.currency,
+    customerName: charge.customerName,
+    customerEmailMask: maskEmail(charge.customerEmail),
+    provider: charge.provider,
+    status: charge.status,
+    hasReview: Boolean(charge.testimonial),
+    reviewPublished: charge.testimonial?.published ?? null,
+    askAfterAt: charge.askAfterAt.toISOString(),
+    lastReviewEmailAt: charge.lastReviewEmailAt?.toISOString() ?? null,
+    paidAt: charge.paidAt.toISOString(),
+    ready: charge.askAfterAt.getTime() <= Date.now(),
+    asked: Boolean(charge.lastReviewEmailAt) ||
+      Boolean(
+        charge.invites[0] &&
+          !charge.invites[0].usedAt &&
+          charge.invites[0].expiresAt.getTime() > Date.now(),
+      ),
+    inviteExpired: charge.invites[0]
+      ? charge.invites[0].expiresAt.getTime() < Date.now() ||
+        Boolean(charge.invites[0].usedAt)
+      : true,
+  };
 }
 
 export async function GET() {
@@ -14,28 +57,15 @@ export async function GET() {
   }
   const charges = await prisma.charge.findMany({
     where: { brandId: ctx.brand.id },
-    include: { testimonial: true, invites: { orderBy: { createdAt: "desc" }, take: 1 } },
+    include: {
+      testimonial: true,
+      invites: { orderBy: { createdAt: "desc" }, take: 1 },
+    },
     orderBy: { createdAt: "desc" },
     take: 50,
   });
   return NextResponse.json({
-    charges: charges.map((charge) => ({
-      id: charge.id,
-      orderRef: charge.orderRef,
-      amountCents: charge.amountCents,
-      currency: charge.currency,
-      customerName: charge.customerName,
-      customerEmailMask: maskEmail(charge.customerEmail),
-      provider: charge.provider,
-      status: charge.status,
-      hasReview: Boolean(charge.testimonial),
-      reviewPublished: charge.testimonial?.published ?? null,
-      inviteExpired: charge.invites[0]
-        ? charge.invites[0].expiresAt.getTime() < Date.now() ||
-          Boolean(charge.invites[0].usedAt)
-        : true,
-      paidAt: charge.paidAt.toISOString(),
-    })),
+    charges: charges.map(serializeCharge),
   });
 }
 
@@ -81,6 +111,11 @@ export async function POST(req: Request) {
       "",
     );
     const providerChargeId = `demo_${ctx.brand.slug}_${orderRef}`;
+    const paidAt = new Date();
+    const askAfterAt = computeAskAfterAt(
+      paidAt,
+      ctx.brand.reviewAskAfterDays,
+    );
 
     const charge = await prisma.charge.create({
       data: {
@@ -92,19 +127,17 @@ export async function POST(req: Request) {
         customerEmail,
         customerName,
         status: "paid",
+        paidAt,
+        askAfterAt,
       },
     });
-    const { url, token } = await issueInvite(charge.id, ctx.brand.id);
     return NextResponse.json({
       ok: true,
-      charge: {
-        id: charge.id,
-        orderRef: charge.orderRef,
-        amountCents: charge.amountCents,
-        customerEmail,
-      },
-      inviteUrl: url,
-      token,
+      charge: serializeCharge({
+        ...charge,
+        testimonial: null,
+        invites: [],
+      }),
     });
   } catch (error) {
     const message = String(error);

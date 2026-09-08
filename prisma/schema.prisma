@@ -28,6 +28,7 @@ model Brand {
   paymentProvider  String?
   paymentConnected Boolean        @default(false)
   paymentAccountId String?
+  reviewAskAfterDays Int          @default(7)
   ownerId          String
   owner            User           @relation(fields: [ownerId], references: [id])
   testimonials     Testimonial[]
@@ -48,9 +49,11 @@ model Charge {
   currency         String         @default("USD")
   customerEmail    String
   customerName     String
-  status           String         @default("paid")
-  paidAt           DateTime       @default(now())
-  createdAt        DateTime       @default(now())
+  status            String         @default("paid")
+  paidAt            DateTime       @default(now())
+  askAfterAt        DateTime       @default(now())
+  lastReviewEmailAt DateTime?
+  createdAt         DateTime       @default(now())
   invites          ReviewInvite[]
   testimonial      Testimonial?
 
