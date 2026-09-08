@@ -151,9 +151,12 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
             </div>
             <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-[var(--rd-line)] pt-6">
               {[
-                ["8+", "paid reviews on the wall"],
+                [
+                  String(demo?.verifiedCount ?? reviews.length),
+                  "paid reviews on the wall",
+                ],
                 ["0", "disputed charges in demo"],
-                ["3", "open impersonation threats"],
+                [String(threats.length), "open impersonation threats"],
               ].map(([n, label]) => (
                 <div key={label}>
                   <dt className="font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--rd-forest)]">

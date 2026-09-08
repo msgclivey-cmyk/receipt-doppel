@@ -15,7 +15,7 @@ export function Reveal({
   id?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [on, setOn] = useState(false);
+  const [on, setOn] = useState(true);
 
   useEffect(() => {
     const el = ref.current;
@@ -24,6 +24,12 @@ export function Reveal({
       setOn(true);
       return;
     }
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.92) {
+      setOn(true);
+      return;
+    }
+    setOn(false);
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

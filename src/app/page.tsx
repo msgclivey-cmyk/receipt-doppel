@@ -12,7 +12,6 @@ async function getLandingDemo(): Promise<LandingDemo | null> {
     prisma.testimonial.findMany({
       where: { brandId: brand.id, published: true },
       orderBy: { createdAt: "desc" },
-      take: 6,
     }),
     prisma.threat.findMany({
       where: { brandId: brand.id },
