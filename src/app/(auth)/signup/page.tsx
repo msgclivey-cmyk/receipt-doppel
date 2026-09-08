@@ -20,7 +20,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
           <BrandMark className="justify-center" />
-          <CardTitle className="text-center text-2xl">Create your proof wall</CardTitle>
+          <CardTitle className="text-center text-2xl">Publish your proof wall</CardTitle>
           <p className="text-center text-sm text-[var(--rd-muted)]">
             Or use the demo account on the login page.
           </p>
@@ -50,7 +50,7 @@ export default function SignupPage() {
               <Input id="password" name="password" type="password" required minLength={6} />
             </div>
             <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? "Creating…" : "Start free proof wall"}
+              {pending ? "Publishing…" : "Publish my wall"}
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-[var(--rd-muted)]">

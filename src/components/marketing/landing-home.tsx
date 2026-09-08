@@ -138,14 +138,14 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
             </p>
             <div className="mt-6">
               <Button asChild size="lg">
-                <Link href="#live-proof">
-                  See a live proof wall
+                <Link href="/signup">
+                  Publish my wall
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <p className="mt-3 text-sm text-[var(--rd-muted)]">
                 {brand
-                  ? `Live demo · ${brand.name} · ${demo?.verifiedCount ?? reviews.length} paid reviews`
+                  ? `The live ${brand.name} wall is on this page · ${demo?.verifiedCount ?? reviews.length} paid reviews`
                   : "Live demo loads from the seeded brand."}
               </p>
             </div>
@@ -510,11 +510,11 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
               If they didn&apos;t pay, they don&apos;t speak for your brand.
             </p>
             <p className="mt-3 max-w-lg text-sm text-white/70">
-              Click the live wall. Then publish yours.
+              The live wall is on this page. Publish yours.
             </p>
             <Button asChild size="lg" className="mt-6 bg-white text-[var(--rd-forest)] hover:bg-[var(--rd-mint)]">
-              <Link href="#live-proof">
-                See a live proof wall
+              <Link href="/signup">
+                Publish my wall
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
