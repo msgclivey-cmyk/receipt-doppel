@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { computeAskAfterAt, maskEmail } from "@/lib/reviews";
+import { computeAskAfterAt, maskEmail, REVIEW_EMAIL_COOLDOWN_MS } from "@/lib/reviews";
 
 function randomOrderRef() {
   return String(Math.floor(40000 + Math.random() * 50000));
@@ -37,12 +37,20 @@ function serializeCharge(charge: {
     lastReviewEmailAt: charge.lastReviewEmailAt?.toISOString() ?? null,
     paidAt: charge.paidAt.toISOString(),
     ready: charge.askAfterAt.getTime() <= Date.now(),
-    asked: Boolean(charge.lastReviewEmailAt) ||
-      Boolean(
-        charge.invites[0] &&
-          !charge.invites[0].usedAt &&
-          charge.invites[0].expiresAt.getTime() > Date.now(),
-      ),
+    asked: (() => {
+      const invite = charge.invites[0];
+      const openInvite = Boolean(
+        invite &&
+          !invite.usedAt &&
+          invite.expiresAt.getTime() > Date.now(),
+      );
+      const coolingOff = Boolean(
+        charge.lastReviewEmailAt &&
+          Date.now() - charge.lastReviewEmailAt.getTime() <
+            REVIEW_EMAIL_COOLDOWN_MS,
+      );
+      return openInvite || coolingOff;
+    })(),
     inviteExpired: charge.invites[0]
       ? charge.invites[0].expiresAt.getTime() < Date.now() ||
         Boolean(charge.invites[0].usedAt)

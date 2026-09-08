@@ -238,7 +238,7 @@ export function RequestReviewPanel({
                         : ` · ${waitLabel(charge.askAfterAt)}`}
                 </span>
               </p>
-              {!charge.hasReview && charge.status === "paid" ? (
+              {!charge.hasReview && charge.status === "paid" && !charge.asked ? (
                 <div className="flex flex-wrap gap-2">
                   {charge.ready ? (
                     <Button
