@@ -17,6 +17,10 @@ export type SessionUser = {
   brandSlug?: string;
 };
 
+export function publicUser(user: { id: string; email: string; name: string }) {
+  return { id: user.id, email: user.email, name: user.name };
+}
+
 export async function hashPassword(password: string) {
   return bcrypt.hash(password, 10);
 }
@@ -81,5 +85,6 @@ export async function requireUser() {
     include: { brands: { take: 1 } },
   });
   if (!user) return null;
-  return { session, user, brand: user.brands[0] ?? null };
+  const { passwordHash: _passwordHash, ...safeUser } = user;
+  return { session, user: safeUser, brand: user.brands[0] ?? null };
 }

@@ -13,10 +13,12 @@ export async function GET(req: Request) {
     if (!brand) {
       return NextResponse.json({ error: "Brand not found" }, { status: 404 });
     }
+    const ctx = await requireUser();
+    const isOwner = ctx?.brand?.id === brand.id;
     const testimonials = await prisma.testimonial.findMany({
       where: {
         brandId: brand.id,
-        ...(published === "true" ? { published: true } : {}),
+        ...(!isOwner || published === "true" ? { published: true } : {}),
         ...(category && category !== "all" ? { category } : {}),
       },
       orderBy: { createdAt: "desc" },

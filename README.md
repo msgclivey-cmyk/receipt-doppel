@@ -8,6 +8,7 @@ Payment-bound testimonials (Stripe / Paddle) + impersonation defense in one fore
 
 ```bash
 cd receipt-doppel
+cp .env.example .env
 npm install
 npx prisma migrate dev
 npx prisma db seed
@@ -18,6 +19,8 @@ npm start
 For local iteration: `npm run dev` (same host/port).
 
 App binds to **http://127.0.0.1:4317** (also `0.0.0.0:4317`).
+
+Set a unique `AUTH_SECRET` in `.env` before any non-local deploy. The JWT cookie is signed with that value.
 
 ## Demo login
 
@@ -54,8 +57,6 @@ Seeded brand: **Acme Brew Co.** (`/proof/acme-brew`).
 ## Stack
 
 Next.js App Router · TypeScript · Tailwind · shadcn-style Radix UI · Prisma · SQLite
-
-Mockups live in `public/mockups/`.
 
 ## Notes
 
