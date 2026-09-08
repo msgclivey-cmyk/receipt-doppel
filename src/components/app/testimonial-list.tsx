@@ -21,8 +21,10 @@ type Testimonial = {
 
 export function TestimonialPublishList({
   initial,
+  wallHref,
 }: {
   initial: Testimonial[];
+  wallHref: string;
 }) {
   const [items, setItems] = useState(initial);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +54,8 @@ export function TestimonialPublishList({
   if (items.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-[var(--rd-muted)]">
-        No testimonials yet. Connect payments in Settings to sync demo charges.
+        No testimonials yet. Record a paid order above and send the buyer a
+        review link.
       </p>
     );
   }
@@ -95,7 +98,7 @@ export function TestimonialPublishList({
         </div>
       ))}
       <Link
-        href="/proof/acme-brew"
+        href={wallHref}
         className="inline-block text-sm font-semibold text-[var(--rd-forest)]"
       >
         View all testimonials →

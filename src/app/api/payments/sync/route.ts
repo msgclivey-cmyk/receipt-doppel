@@ -24,42 +24,10 @@ export async function POST(req: Request) {
       },
     });
 
-    // Demo sync: attach a fresh payment-bound testimonial if none recent
-    const recent = await prisma.testimonial.count({
-      where: {
-        brandId: brand.id,
-        createdAt: { gte: new Date(Date.now() - 60_000) },
-      },
-    });
-
-    let imported = 0;
-    if (recent === 0) {
-      const orderRef = String(Math.floor(40000 + Math.random() * 20000));
-      await prisma.testimonial.create({
-        data: {
-          brandId: brand.id,
-          authorName: "Synced Customer",
-          authorTitle: "Verified buyer",
-          authorInitials: "SC",
-          authorEmailMask: "s***@buyer.demo",
-          body: `Demo ${provider} sync imported this payment-bound review for ${brand.name}.`,
-          rating: 5,
-          amountCents: provider === "stripe" ? 4900 : 7900,
-          provider,
-          orderRef,
-          published: false,
-          brandSafe: true,
-          category: brand.industry,
-        },
-      });
-      imported = 1;
-    }
-
     return NextResponse.json({
       ok: true,
       brand,
-      imported,
-      message: `Connected demo ${provider} account ${accountId}. Synced ${imported} payment(s).`,
+      message: `Connected ${provider} account ${accountId}. Record a paid order in the console to send a review invite.`,
     });
   } catch {
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });

@@ -50,9 +50,24 @@ export async function PATCH(req: Request) {
     }
     const existing = await prisma.testimonial.findFirst({
       where: { id, brandId: ctx.brand.id },
+      include: { charge: true },
     });
     if (!existing) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    if (body.published === true) {
+      if (!existing.charge) {
+        return NextResponse.json(
+          { error: "This review is not bound to a charge, so it cannot publish." },
+          { status: 409 },
+        );
+      }
+      if (existing.charge.status !== "paid") {
+        return NextResponse.json(
+          { error: "The bound charge is refunded or disputed, so this review cannot publish." },
+          { status: 409 },
+        );
+      }
     }
     const updated = await prisma.testimonial.update({
       where: { id },

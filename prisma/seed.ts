@@ -1,11 +1,18 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { createHash } from "node:crypto";
 
 const prisma = new PrismaClient();
 
+function hashToken(token: string) {
+  return createHash("sha256").update(token).digest("hex");
+}
+
 async function main() {
-  await prisma.threat.deleteMany();
+  await prisma.reviewInvite.deleteMany();
   await prisma.testimonial.deleteMany();
+  await prisma.charge.deleteMany();
+  await prisma.threat.deleteMany();
   await prisma.brand.deleteMany();
   await prisma.user.deleteMany();
 
@@ -59,13 +66,89 @@ async function main() {
     },
   });
 
+  async function boundReview({
+    brandId,
+    slug,
+    authorName,
+    authorTitle,
+    authorInitials,
+    authorEmail,
+    body,
+    amountCents,
+    provider,
+    orderRef,
+    category,
+    createdAt,
+    published = true,
+    brandSafe = true,
+  }: {
+    brandId: string;
+    slug: string;
+    authorName: string;
+    authorTitle: string;
+    authorInitials: string;
+    authorEmail: string;
+    body: string;
+    amountCents: number;
+    provider: string;
+    orderRef: string;
+    category: string;
+    createdAt: Date;
+    published?: boolean;
+    brandSafe?: boolean;
+  }) {
+    const charge = await prisma.charge.create({
+      data: {
+        brandId,
+        provider,
+        providerChargeId: `seed_${slug}_${orderRef}`,
+        orderRef,
+        amountCents,
+        customerEmail: authorEmail,
+        customerName: authorName,
+        status: "paid",
+        paidAt: createdAt,
+        createdAt,
+      },
+    });
+    await prisma.reviewInvite.create({
+      data: {
+        brandId,
+        chargeId: charge.id,
+        tokenHash: hashToken(`seed-used-${slug}-${orderRef}`),
+        expiresAt: createdAt,
+        usedAt: createdAt,
+        createdAt,
+      },
+    });
+    await prisma.testimonial.create({
+      data: {
+        brandId,
+        chargeId: charge.id,
+        authorName,
+        authorTitle,
+        authorInitials,
+        authorEmailMask: `${authorEmail[0]}***@${authorEmail.split("@")[1]}`,
+        body,
+        rating: 5,
+        amountCents,
+        provider,
+        orderRef,
+        published,
+        brandSafe,
+        category,
+        createdAt,
+      },
+    });
+  }
+
   const now = Date.now();
   const acmeTestimonials = [
     {
       authorName: "Casey M.",
       authorTitle: "Subscriber",
       authorInitials: "CM",
-      authorEmailMask: "c***@gmail.com",
+      authorEmail: "casey.m@gmail.com",
       body: "Acme Brew Co. never disappoints. Bold, clean cold brew — and I love that every review here is tied to a real order.",
       amountCents: 2800,
       provider: "stripe",
@@ -77,7 +160,7 @@ async function main() {
       authorName: "Jordan T.",
       authorTitle: "Wholesale buyer",
       authorInitials: "JT",
-      authorEmailMask: "j***@cafe.io",
+      authorEmail: "jordan.t@cafe.io",
       body: "We stocked Acme for our cafes after tasting the sample. The proof wall made it obvious they weren't faking reviews.",
       amountCents: 14900,
       provider: "stripe",
@@ -90,7 +173,7 @@ async function main() {
       authorName: "Sara R.",
       authorTitle: "Monthly club member",
       authorInitials: "SR",
-      authorEmailMask: "s***@hey.com",
+      authorEmail: "sara.r@hey.com",
       body: "Subscription day is the best day. Smooth chocolate notes, no watery aftertaste — and the trust badge on their site sealed it.",
       amountCents: 3200,
       provider: "stripe",
@@ -102,7 +185,7 @@ async function main() {
       authorName: "Maya Chen",
       authorTitle: "Founder at Loomly",
       authorInitials: "MC",
-      authorEmailMask: "m***@loomly.demo",
+      authorEmail: "maya@loomly.demo",
       body: "Receipt Doppel gives our prospects instant confidence. Seeing a real payment receipt sealed to Stripe was the nudge that closed more deals.",
       amountCents: 4900,
       provider: "stripe",
@@ -114,7 +197,7 @@ async function main() {
       authorName: "Jordan Blake",
       authorTitle: "Head of Growth at Nestful",
       authorInitials: "JB",
-      authorEmailMask: "j***@nestful.io",
+      authorEmail: "jordan.b@nestful.io",
       body: "We had a competitor faking customer logos and testimonials. Receipt Doppel made it easy to show what's real — and shut that down.",
       amountCents: 14900,
       provider: "stripe",
@@ -127,7 +210,7 @@ async function main() {
       authorName: "Priya Nair",
       authorTitle: "Co-founder at ShopSol",
       authorInitials: "PN",
-      authorEmailMask: "p***@shopsol.co",
+      authorEmail: "priya@shopsol.co",
       body: "Adding verified receipts to our site increased trial-to-paid conversions by 23% in two weeks. The trust signal is undeniable.",
       amountCents: 9900,
       provider: "paddle",
@@ -139,7 +222,7 @@ async function main() {
       authorName: "Alex Lawrence",
       authorTitle: "CEO at Clearbitly",
       authorInitials: "AL",
-      authorEmailMask: "a***@clearbitly.com",
+      authorEmail: "alex.l@clearbitly.com",
       body: "Setup took minutes and the impact was immediate. Prospects love that every review here is tied to a real payment.",
       amountCents: 4900,
       provider: "stripe",
@@ -151,7 +234,7 @@ async function main() {
       authorName: "Riley Quince",
       authorTitle: "Cafe owner",
       authorInitials: "RQ",
-      authorEmailMask: "r***@northline.cafe",
+      authorEmail: "riley@northline.cafe",
       body: "Ordered a case for the shop. Baristas and regulars both asked where we got it. Real receipts beat fake five-star spam.",
       amountCents: 8600,
       provider: "stripe",
@@ -162,59 +245,50 @@ async function main() {
   ];
 
   for (const t of acmeTestimonials) {
-    await prisma.testimonial.create({
-      data: {
-        brandId: acme.id,
-        authorName: t.authorName,
-        authorTitle: t.authorTitle,
-        authorInitials: t.authorInitials,
-        authorEmailMask: t.authorEmailMask,
-        body: t.body,
-        rating: 5,
-        amountCents: t.amountCents,
-        provider: t.provider,
-        orderRef: t.orderRef,
-        published: true,
-        brandSafe: t.brandSafe ?? true,
-        category: t.category,
-        createdAt: new Date(now - t.minutesAgo * 60_000),
-      },
+    await boundReview({
+      brandId: acme.id,
+      slug: acme.slug,
+      authorName: t.authorName,
+      authorTitle: t.authorTitle,
+      authorInitials: t.authorInitials,
+      authorEmail: t.authorEmail,
+      body: t.body,
+      amountCents: t.amountCents,
+      provider: t.provider,
+      orderRef: t.orderRef,
+      category: t.category,
+      createdAt: new Date(now - t.minutesAgo * 60_000),
+      brandSafe: t.brandSafe ?? true,
     });
   }
 
-  await prisma.testimonial.createMany({
-    data: [
-      {
-        brandId: loomly.id,
-        authorName: "Devon Park",
-        authorTitle: "Marketing lead",
-        authorInitials: "DP",
-        authorEmailMask: "d***@vero.app",
-        body: "Loomly's proof wall made renewal a no-brainer. Payment-bound reviews beat screenshots every time.",
-        rating: 5,
-        amountCents: 7900,
-        provider: "paddle",
-        orderRef: "90011",
-        published: true,
-        brandSafe: true,
-        category: "SaaS",
-      },
-      {
-        brandId: loomly.id,
-        authorName: "Sam Ortiz",
-        authorTitle: "Founder",
-        authorInitials: "SO",
-        authorEmailMask: "s***@peak.tools",
-        body: "We almost bought from a lookalike site. Loomly's Receipt Doppel badge kept us on the real product.",
-        rating: 5,
-        amountCents: 14900,
-        provider: "paddle",
-        orderRef: "90042",
-        published: true,
-        brandSafe: true,
-        category: "SaaS",
-      },
-    ],
+  await boundReview({
+    brandId: loomly.id,
+    slug: loomly.slug,
+    authorName: "Devon Park",
+    authorTitle: "Marketing lead",
+    authorInitials: "DP",
+    authorEmail: "devon@vero.app",
+    body: "Loomly's proof wall made renewal a no-brainer. Payment-bound reviews beat screenshots every time.",
+    amountCents: 7900,
+    provider: "paddle",
+    orderRef: "90011",
+    category: "SaaS",
+    createdAt: new Date(now - 180 * 60_000),
+  });
+  await boundReview({
+    brandId: loomly.id,
+    slug: loomly.slug,
+    authorName: "Sam Ortiz",
+    authorTitle: "Founder",
+    authorInitials: "SO",
+    authorEmail: "sam@peak.tools",
+    body: "We almost bought from a lookalike site. Loomly's Receipt Doppel badge kept us on the real product.",
+    amountCents: 14900,
+    provider: "paddle",
+    orderRef: "90042",
+    category: "SaaS",
+    createdAt: new Date(now - 360 * 60_000),
   });
 
   const threats = [

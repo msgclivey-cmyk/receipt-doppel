@@ -17,28 +17,65 @@ model User {
 }
 
 model Brand {
-  id               String        @id @default(cuid())
+  id               String         @id @default(cuid())
   name             String
-  slug             String        @unique
+  slug             String         @unique
   domain           String
   tagline          String?
   industry         String
   logoInitials     String
-  protectionActive Boolean       @default(true)
+  protectionActive Boolean        @default(true)
   paymentProvider  String?
-  paymentConnected Boolean       @default(false)
+  paymentConnected Boolean        @default(false)
   paymentAccountId String?
   ownerId          String
-  owner            User          @relation(fields: [ownerId], references: [id])
+  owner            User           @relation(fields: [ownerId], references: [id])
   testimonials     Testimonial[]
   threats          Threat[]
-  createdAt        DateTime      @default(now())
+  charges          Charge[]
+  reviewInvites    ReviewInvite[]
+  createdAt        DateTime       @default(now())
+}
+
+model Charge {
+  id               String         @id @default(cuid())
+  brandId          String
+  brand            Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  provider         String
+  providerChargeId String
+  orderRef         String
+  amountCents      Int
+  currency         String         @default("USD")
+  customerEmail    String
+  customerName     String
+  status           String         @default("paid")
+  paidAt           DateTime       @default(now())
+  createdAt        DateTime       @default(now())
+  invites          ReviewInvite[]
+  testimonial      Testimonial?
+
+  @@unique([brandId, orderRef])
+  @@unique([provider, providerChargeId])
+}
+
+model ReviewInvite {
+  id        String    @id @default(cuid())
+  brandId   String
+  brand     Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  chargeId  String
+  charge    Charge    @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }
 
 model Testimonial {
   id              String   @id @default(cuid())
   brandId         String
   brand           Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  chargeId        String?  @unique
+  charge          Charge?  @relation(fields: [chargeId], references: [id], onDelete: SetNull)
   authorName      String
   authorTitle     String?
   authorInitials  String

@@ -20,14 +20,14 @@ const steps = [
   {
     n: "01",
     title: "Connect the payment graph",
-    body: "Stripe or Paddle. Receipt Doppel only accepts quotes that match a real charge — provider, amount, and order ref.",
+    body: "Stripe or Paddle. After they pay, the thank-you page is already theirs — we do not send them on a separate review quest.",
     detail:
-      "No CSV of screenshots. No “trust us” imports. If the charge is not in your account, the review cannot publish.",
+      "The form is one sentence with Skip. Same link can sit on a cafe QR. No extra account.",
   },
   {
     n: "02",
     title: "Bind the quote to the receipt",
-    body: "The customer’s words are sealed to that payment. The public card shows Paid & verified plus the order number.",
+    body: "If they write anything, it is sealed to that charge. If they skip, nothing is published. A rival cannot fake the payment.",
     detail:
       "A rival can copy the sentence. They cannot copy the charge. That is the whole product.",
   },
@@ -68,7 +68,7 @@ const jobs = [
 const faqs = [
   {
     q: "How is this different from screenshots or a review widget?",
-    a: "Screenshots and most widgets take anyone’s word. Receipt Doppel refuses a quote unless it matches a charge in Stripe or Paddle. The badge on the card is the receipt, not decoration.",
+    a: "Screenshots and most widgets take anyone’s word. Receipt Doppel only opens a review on the thank-you page for a real charge. Skip is allowed. Nothing publishes without that payment.",
   },
   {
     q: "Do I have to use Stripe?",
