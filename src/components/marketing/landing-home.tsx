@@ -278,8 +278,8 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
                 Same wall your buyers would see.
               </h2>
               <p className="mt-3 max-w-xl text-[var(--rd-muted)]">
-                These cards come from real demo charges for{" "}
-                {brand?.name ?? "the demo brand"}. Open the public wall — it is
+                These cards come from paid orders for{" "}
+                {brand?.name ?? "the demo brand"} — open the public wall. It is
                 not a screenshot.
               </p>
             </div>
