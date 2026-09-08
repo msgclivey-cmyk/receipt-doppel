@@ -13,7 +13,7 @@ import { PaidVerifiedBadge } from "@/components/proof/badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { LandingDemo } from "@/lib/landing";
+import { threatSeverityLabel, type LandingDemo } from "@/lib/landing";
 import { formatMoney } from "@/lib/utils";
 
 const steps = [
@@ -34,7 +34,7 @@ const steps = [
   {
     n: "03",
     title: "Publish the wall and the badge",
-    body: "A public proof wall at /proof/your-brand, an embed for your site, and a badge on the product page.",
+    body: "A public proof wall, an embed for your site, and a badge on the product page.",
     detail:
       "Buyers see “Paid customer · Brand not impersonated” before they add to cart — not after they get burned.",
   },
@@ -72,7 +72,7 @@ const faqs = [
   },
   {
     q: "Do I have to use Stripe?",
-    a: "Stripe or Paddle. The demo connects a fake account so you can see the wall without keys. Production connect is the same flow with a real account id.",
+    a: "Stripe or Paddle. The live Acme Brew Co. demo is already connected, so you can click the wall without API keys. Production uses the same flow with a real account.",
   },
   {
     q: "What does Guard actually take down?",
@@ -121,7 +121,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
   return (
     <div className="min-h-screen bg-white">
       <SiteHeader />
-
+      <main>
       <section className="rd-hero relative overflow-hidden border-b border-[var(--rd-line)]">
         <div className="rd-mesh" aria-hidden />
         <div className="relative mx-auto grid max-w-7xl items-start gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(280px,36%)_minmax(0,1fr)] lg:gap-12 lg:py-12 xl:gap-16">
@@ -186,7 +186,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
       </section>
 
       <section id="what-we-do" className="border-b border-[var(--rd-line)] py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--rd-forest)]">
               What we do
@@ -203,7 +203,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {jobs.map((job, i) => (
               <Reveal key={job.title} delay={i * 80}>
-                <Card className="h-full transition-transform duration-300 hover:-translate-y-1">
+                <Card className="rd-lift h-full">
                   <CardContent className="space-y-3 p-6">
                     <job.icon className="h-6 w-6 text-[var(--rd-forest)]" />
                     <h3 className="text-lg font-bold">{job.title}</h3>
@@ -219,7 +219,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
       </section>
 
       <section id="how-it-works" className="rd-grid-bg border-b border-[var(--rd-line)] py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--rd-forest)]">
               How a quote becomes proof
@@ -230,19 +230,22 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
           </Reveal>
           <ol className="mt-12 grid gap-4 md:grid-cols-2">
             {steps.map((step, i) => (
-              <Reveal key={step.n} delay={i * 70}>
-                <li className="rounded-2xl border border-[var(--rd-line)] bg-white p-6 transition-shadow duration-300 hover:shadow-md">
-                  <p className="font-mono text-xs font-semibold text-[var(--rd-forest)]">
-                    {step.n}
-                  </p>
-                  <h3 className="mt-2 text-xl font-bold">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[var(--rd-ink)]">
-                    {step.body}
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-[var(--rd-muted)]">
-                    {step.detail}
-                  </p>
-                </li>
+              <Reveal
+                key={step.n}
+                as="li"
+                delay={i * 70}
+                className="rounded-2xl border border-[var(--rd-line)] bg-white p-6 transition-shadow duration-300 hover:shadow-md"
+              >
+                <p className="font-mono text-xs font-semibold text-[var(--rd-forest)]">
+                  {step.n}
+                </p>
+                <h3 className="mt-2 text-xl font-bold">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--rd-ink)]">
+                  {step.body}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--rd-muted)]">
+                  {step.detail}
+                </p>
               </Reveal>
             ))}
           </ol>
@@ -256,8 +259,8 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
                 Paddle
               </span>
               <p className="text-sm text-[var(--rd-muted)]">
-                Connect in settings. The demo stores a fake account id and can
-                import one unpublished payment-bound review — no API keys.
+                Connect Stripe or Paddle in settings. The live demo is already
+                wired so you can click through without API keys.
               </p>
             </div>
           </Reveal>
@@ -265,7 +268,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
       </section>
 
       <section id="live-proof" className="border-b border-[var(--rd-line)] py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--rd-forest)]">
@@ -275,14 +278,14 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
                 Same wall your buyers would see.
               </h2>
               <p className="mt-3 max-w-xl text-[var(--rd-muted)]">
-                These cards are seeded from real demo charges for{" "}
-                {brand?.name ?? "the demo brand"}. Click through to the public
-                route — it is not a screenshot.
+                These cards come from real demo charges for{" "}
+                {brand?.name ?? "the demo brand"}. Open the public wall — it is
+                not a screenshot.
               </p>
             </div>
             <Button asChild variant="outline">
               <Link href={brand ? `/proof/${brand.slug}` : "/signup"}>
-                Open /proof/{brand?.slug ?? "your-brand"}
+                Open the live wall
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -296,7 +299,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {reviews.map((review, i) => (
                 <Reveal key={review.id} delay={i * 50}>
-                  <Card className="h-full transition-transform duration-300 hover:-translate-y-1">
+                  <Card className="rd-lift h-full">
                     <CardContent className="flex h-full flex-col gap-4 p-5">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--rd-mint)] text-sm font-bold text-[var(--rd-forest)]">
@@ -328,26 +331,40 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
 
           <Reveal className="mt-12">
             <div className="overflow-hidden rounded-2xl border border-[var(--rd-line)]">
-              <div className="flex items-center justify-between gap-3 border-b border-[var(--rd-line)] bg-[var(--rd-mist)] px-4 py-3">
-                <p className="text-sm font-semibold">Embed this wall</p>
-                <code className="hidden text-xs text-[var(--rd-muted)] sm:inline">
-                  {`/embed/${brand?.slug ?? "acme-brew"}`}
-                </code>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--rd-line)] bg-[var(--rd-mist)] px-4 py-3">
+                <p className="text-sm font-semibold">How the embed looks on your site</p>
+                {brand ? (
+                  <Link
+                    href={`/embed/${brand.slug}`}
+                    className="text-sm font-semibold text-[var(--rd-forest)] hover:underline"
+                  >
+                    Open the live embed
+                  </Link>
+                ) : null}
               </div>
-              {brand ? (
-                <iframe
-                  title={`${brand.name} proof embed`}
-                  src={`/embed/${brand.slug}`}
-                  className="h-[28rem] w-full bg-white"
-                />
-              ) : null}
+              <div className="grid gap-3 bg-white p-4 sm:grid-cols-2">
+                {reviews.slice(0, 4).map((review) => (
+                  <Card key={`embed-${review.id}`}>
+                    <CardContent className="space-y-2 p-4">
+                      <p className="text-sm font-semibold">{review.authorName}</p>
+                      <p className="line-clamp-3 text-sm text-[var(--rd-muted)]">
+                        “{review.body}”
+                      </p>
+                      <PaidVerifiedBadge
+                        provider={review.provider}
+                        orderRef={review.orderRef}
+                      />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </Reveal>
         </div>
       </section>
 
       <section id="guard" className="rd-grid-bg border-b border-[var(--rd-line)] py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--rd-forest)]">
               Guard
@@ -376,7 +393,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
                             threat.severity === "critical" ? "danger" : "warn"
                           }
                         >
-                          {threat.severity}
+                          {threatSeverityLabel(threat.severity)}
                         </Badge>
                       </div>
                       <p className="mt-2 text-sm text-[var(--rd-muted)]">
@@ -400,7 +417,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
       </section>
 
       <section id="pricing" className="border-b border-[var(--rd-line)] py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <Reveal className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--rd-forest)]">
               Pricing
@@ -496,7 +513,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
               Click the live wall. Then publish yours.
             </p>
             <Button asChild size="lg" className="mt-6 bg-white text-[var(--rd-forest)] hover:bg-[var(--rd-mint)]">
-              <Link href="#live-product">
+              <Link href="#live-proof">
                 See a live proof wall
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -504,6 +521,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
           </Reveal>
         </div>
       </section>
+      </main>
 
       <SiteFooter />
     </div>

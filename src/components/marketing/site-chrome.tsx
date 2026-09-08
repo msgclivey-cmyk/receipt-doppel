@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 
 const links = [
   { href: "/#what-we-do", label: "What we do" },
+  { href: "/#how-it-works", label: "How it works" },
   { href: "/#live-proof", label: "Live proof" },
   { href: "/pricing", label: "Pricing" },
 ];
@@ -11,16 +12,22 @@ const links = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--rd-line)]/70 bg-white/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <BrandMark />
-        <nav className="hidden items-center gap-7 text-sm font-medium text-[var(--rd-forest)] md:flex">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
+        <BrandMark compact />
+        <nav className="hidden items-center gap-6 text-sm font-medium text-[var(--rd-forest)] lg:flex">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="transition-opacity hover:opacity-70">
               {l.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <Link
+            href="/#live-proof"
+            className="truncate text-sm font-semibold text-[var(--rd-forest)] lg:hidden"
+          >
+            Live proof
+          </Link>
           <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
             <Link href="/login">Log in</Link>
           </Button>

@@ -1,12 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useId, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
 import { ArrowUpRight, Globe, TriangleAlert } from "lucide-react";
 import { PaidVerifiedBadge, TrustInlineBadge } from "@/components/proof/badges";
 import { Badge } from "@/components/ui/badge";
 import { formatMoney } from "@/lib/utils";
-import type { LandingBrand, LandingReview, LandingThreat } from "@/lib/landing";
+import {
+  paymentProviderLabel,
+  threatSeverityLabel,
+  threatTypeLabel,
+  type LandingBrand,
+  type LandingReview,
+  type LandingThreat,
+} from "@/lib/landing";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -16,12 +31,6 @@ const TABS = [
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
-
-function threatLabel(threat: LandingThreat) {
-  if (threat.severity === "critical") return "Critical";
-  if (threat.severity === "high") return "High";
-  return "Medium";
-}
 
 function BrowserChrome({
   url,
@@ -71,7 +80,7 @@ function ProofPanel({
           {brand.name}
         </p>
         <p className="shrink-0 text-[11px] text-[var(--rd-muted)]">
-          {reviews.length} verified · Stripe
+          {reviews.length} verified · {paymentProviderLabel(brand.paymentProvider)}
         </p>
       </div>
       <ul className="min-h-0 flex-1 space-y-1.5 overflow-auto p-3">
@@ -116,7 +125,7 @@ function ProofPanel({
             Bound to a real charge
           </p>
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-            <span className="capitalize">{selected.provider}</span>
+            <span>{paymentProviderLabel(selected.provider)}</span>
             <span className="font-mono text-xs">#{selected.orderRef}</span>
             <span className="font-semibold">
               {formatMoney(selected.amountCents, selected.currency)}
@@ -143,22 +152,24 @@ function BadgePanel({
 }) {
   const featured = reviews[0];
   return (
-    <div className="grid h-full min-h-0 grid-cols-[140px_minmax(0,1fr)]">
-      <div className="flex items-center justify-center bg-gradient-to-b from-[#1a120c] to-[#3a2618] p-4">
-        <div className="flex h-36 w-[4.5rem] flex-col items-center justify-end rounded-full border border-white/10 bg-gradient-to-b from-[#c4a484] to-[#6b4423] pb-3">
-          <p className="px-1 text-center text-[8px] font-bold uppercase tracking-widest text-white/90">
+    <div className="grid h-full min-h-0 grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)]">
+      <div className="flex h-24 items-center justify-center bg-gradient-to-b from-[#1a120c] to-[#3a2618] sm:h-auto">
+        <div className="flex h-16 w-10 flex-col items-center justify-end rounded-full border border-white/10 bg-gradient-to-b from-[#c4a484] to-[#6b4423] pb-2 sm:h-36 sm:w-[4.5rem] sm:pb-3">
+          <p className="px-1 text-center text-[7px] font-bold uppercase tracking-widest text-white/90 sm:text-[8px]">
             {brand.name}
           </p>
         </div>
       </div>
-      <div className="flex min-w-0 flex-col justify-center gap-2.5 p-4">
+      <div className="flex min-w-0 flex-col justify-center gap-2 overflow-auto p-4 sm:gap-2.5">
         <p className="text-xs text-amber-600">
           ★★★★★ {reviews.length} verified reviews
         </p>
-        <h3 className="text-lg font-bold tracking-tight">House Cold Brew · 32oz</h3>
+        <h3 className="text-base font-bold tracking-tight sm:text-lg">
+          House Cold Brew · 32oz
+        </h3>
         <TrustInlineBadge
           className="max-w-full"
-          provider={brand.paymentProvider === "paddle" ? "Paddle" : "Stripe"}
+          provider={paymentProviderLabel(brand.paymentProvider)}
         />
         <p className="text-2xl font-bold">
           {featured ? formatMoney(featured.amountCents, featured.currency) : "$28"}
@@ -209,13 +220,15 @@ function GuardPanel({
                     variant={threat.severity === "critical" ? "danger" : "warn"}
                     className="shrink-0"
                   >
-                    {threatLabel(threat)}
+                    {threatSeverityLabel(threat.severity)}
                   </Badge>
                 </span>
                 {threat.url ? (
                   <span className="mt-0.5 flex items-center gap-1 font-mono text-[11px] text-[var(--rd-muted)]">
-                    <Globe className="h-3 w-3" />
-                    {threat.url.replace(/^https?:\/\//, "")}
+                    <Globe className="h-3 w-3 shrink-0" />
+                    <span className="truncate">
+                      {threat.url.replace(/^https?:\/\//, "")}
+                    </span>
                   </span>
                 ) : null}
               </button>
@@ -227,7 +240,7 @@ function GuardPanel({
         <div className="border-t border-[var(--rd-line)] bg-[var(--rd-mist)] px-4 py-3">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--rd-danger)]">
             <TriangleAlert className="h-3.5 w-3.5" />
-            {selected.type.replaceAll("_", " ")}
+            {threatTypeLabel(selected.type)}
           </p>
           <p className="mt-1 line-clamp-2 text-sm text-[var(--rd-muted)]">
             {selected.summary}
@@ -255,20 +268,46 @@ export function ProductStage({
 }) {
   const tabId = useId();
   const [tab, setTab] = useState<TabId>("proof");
-  const [paused, setPaused] = useState(false);
+  const [hoverPaused, setHoverPaused] = useState(false);
+  const [focusPaused, setFocusPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [reviewId, setReviewId] = useState(reviews[0]?.id ?? null);
   const [threatId, setThreatId] = useState(threats[0]?.id ?? null);
+  const tabRefs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({});
+  const progressRef = useRef(0);
+  const paused = hoverPaused || focusPaused;
+  progressRef.current = progress;
 
-  const selectTab = useCallback((next: TabId) => {
+  const selectTab = useCallback((next: TabId, focus = false) => {
     setTab(next);
     setProgress(0);
+    if (focus) tabRefs.current[next]?.focus();
   }, []);
+
+  const onTabKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>) => {
+      const index = TABS.findIndex((item) => item.id === tab);
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+        event.preventDefault();
+        selectTab(TABS[(index + 1) % TABS.length].id, true);
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+        event.preventDefault();
+        selectTab(TABS[(index - 1 + TABS.length) % TABS.length].id, true);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        selectTab(TABS[0].id, true);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        selectTab(TABS[TABS.length - 1].id, true);
+      }
+    },
+    [selectTab, tab],
+  );
 
   useEffect(() => {
     if (paused) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let value = 0;
+    let value = progressRef.current;
     const id = window.setInterval(() => {
       value += 2;
       if (value >= 100) {
@@ -294,8 +333,14 @@ export function ProductStage({
   return (
     <div
       className="rd-stage w-full"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseEnter={() => setHoverPaused(true)}
+      onMouseLeave={() => setHoverPaused(false)}
+      onFocusCapture={() => setFocusPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setFocusPaused(false);
+        }
+      }}
     >
       <BrowserChrome
         url={urls[tab]}
@@ -313,11 +358,16 @@ export function ProductStage({
                   type="button"
                   role="tab"
                   id={`${tabId}-${item.id}`}
+                  ref={(node) => {
+                    tabRefs.current[item.id] = node;
+                  }}
+                  tabIndex={selected ? 0 : -1}
                   aria-selected={selected}
                   aria-controls={`${tabId}-panel`}
                   onClick={() => selectTab(item.id)}
+                  onKeyDown={onTabKeyDown}
                   className={cn(
-                    "relative flex-1 px-2 py-2.5 text-center text-sm font-semibold transition-colors duration-200",
+                    "relative flex-1 px-2 py-2.5 text-center text-sm font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rd-forest)]",
                     selected
                       ? "text-[var(--rd-forest)]"
                       : "text-[var(--rd-muted)] hover:text-[var(--rd-ink)]",
@@ -358,10 +408,10 @@ export function ProductStage({
             />
           ) : null}
         </div>
-        <div className="h-0.5 bg-[var(--rd-line)]">
+        <div className="h-0.5 bg-[var(--rd-line)]" aria-hidden>
           <div
-            className="h-full bg-[var(--rd-forest)] transition-[width] duration-100 ease-linear"
-            style={{ width: `${paused ? 0 : progress}%` }}
+            className="h-full bg-[var(--rd-forest)] transition-[width] duration-100 ease-linear motion-reduce:transition-none"
+            style={{ width: `${progress}%` }}
           />
         </div>
       </BrowserChrome>

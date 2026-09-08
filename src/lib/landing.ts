@@ -36,3 +36,19 @@ export type LandingDemo = {
   threats: LandingThreat[];
   verifiedCount: number;
 };
+
+export function paymentProviderLabel(provider: string | null | undefined) {
+  return provider?.toLowerCase() === "paddle" ? "Paddle" : "Stripe";
+}
+
+export function threatSeverityLabel(severity: string) {
+  if (severity === "critical") return "Critical";
+  if (severity === "high") return "High";
+  if (severity === "medium") return "Medium";
+  if (severity === "low") return "Low";
+  return severity.charAt(0).toUpperCase() + severity.slice(1);
+}
+
+export function threatTypeLabel(type: string) {
+  return type.replaceAll("_", " ").replace(/\b\w/g, (char) => char.toUpperCase());
+}

@@ -27,6 +27,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -143,6 +144,14 @@ body {
   animation: rd-fade-up 0.85s ease-out 0.28s both;
 }
 
+.rd-lift {
+  transition: transform 0.3s ease;
+}
+
+.rd-lift:hover {
+  transform: translateY(-4px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -159,6 +168,12 @@ body {
 
   .rd-reveal {
     opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .rd-lift,
+  .rd-lift:hover {
     transform: none;
     transition: none;
   }

@@ -8,13 +8,15 @@ export function Reveal({
   className,
   delay = 0,
   id,
+  as: Tag = "div",
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
   id?: string;
+  as?: "div" | "li";
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const [on, setOn] = useState(true);
 
   useEffect(() => {
@@ -44,13 +46,13 @@ export function Reveal({
   }, []);
 
   return (
-    <div
+    <Tag
       id={id}
-      ref={ref}
+      ref={ref as never}
       className={cn("rd-reveal", on && "rd-reveal-on", className)}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >
       {children}
-    </div>
+    </Tag>
   );
 }
