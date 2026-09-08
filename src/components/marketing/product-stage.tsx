@@ -153,14 +153,14 @@ function BadgePanel({
   const featured = reviews[0];
   return (
     <div className="grid h-full min-h-0 grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)]">
-      <div className="flex h-24 items-center justify-center bg-gradient-to-b from-[#1a120c] to-[#3a2618] sm:h-auto">
-        <div className="flex h-16 w-10 flex-col items-center justify-end rounded-full border border-white/10 bg-gradient-to-b from-[#c4a484] to-[#6b4423] pb-2 sm:h-36 sm:w-[4.5rem] sm:pb-3">
+      <div className="flex h-20 shrink-0 items-center justify-center bg-gradient-to-b from-[#1a120c] to-[#3a2618] sm:h-auto">
+        <div className="flex h-14 w-9 flex-col items-center justify-end rounded-full border border-white/10 bg-gradient-to-b from-[#c4a484] to-[#6b4423] pb-2 sm:h-36 sm:w-[4.5rem] sm:pb-3">
           <p className="px-1 text-center text-[7px] font-bold uppercase tracking-widest text-white/90 sm:text-[8px]">
             {brand.name}
           </p>
         </div>
       </div>
-      <div className="flex min-w-0 flex-col justify-center gap-2 overflow-auto p-4 sm:gap-2.5">
+      <div className="flex min-w-0 flex-col justify-center gap-2 overflow-auto p-3 sm:gap-2.5 sm:p-4">
         <p className="text-xs text-amber-600">
           ★★★★★ {reviews.length} verified reviews
         </p>
@@ -387,7 +387,7 @@ export function ProductStage({
           role="tabpanel"
           id={`${tabId}-panel`}
           aria-labelledby={`${tabId}-${tab}`}
-          className="rd-stage-panel h-[22.5rem]"
+          className="rd-stage-panel h-[28rem] lg:h-[22.5rem]"
         >
           {tab === "proof" ? (
             <ProofPanel
