@@ -124,21 +124,21 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
 
       <section className="rd-hero relative overflow-hidden border-b border-[var(--rd-line)]">
         <div className="rd-mesh" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl items-start gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:py-20">
+        <div className="relative mx-auto grid max-w-7xl items-start gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(280px,36%)_minmax(0,1fr)] lg:gap-12 lg:py-12 xl:gap-16">
           <Reveal>
             <p className="inline-flex rounded-full border border-[var(--rd-forest)]/20 bg-[var(--rd-mint)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--rd-forest)]">
               Bound to Stripe &amp; Paddle
             </p>
-            <h1 className="mt-5 font-[family-name:var(--font-display)] text-[2.6rem] font-bold leading-[1.05] tracking-tight text-[var(--rd-ink)] sm:text-6xl">
+            <h1 className="mt-4 font-[family-name:var(--font-display)] text-[2.15rem] font-bold leading-[1.08] tracking-tight text-[var(--rd-ink)] sm:text-5xl lg:text-[3.15rem]">
               If they didn&apos;t pay, they don&apos;t speak for your brand.
             </h1>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-[var(--rd-muted)]">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-[var(--rd-muted)] lg:text-lg">
               Receipt Doppel binds every testimonial to a real charge, puts that
               proof on your site, and hunts the fake shops using your name.
             </p>
-            <div className="mt-8">
+            <div className="mt-6">
               <Button asChild size="lg">
-                <Link href="#live-product">
+                <Link href="#live-proof">
                   See a live proof wall
                   <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -149,20 +149,20 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
                   : "Live demo loads from the seeded brand."}
               </p>
             </div>
-            <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-[var(--rd-line)] pt-6">
+            <dl className="mt-8 grid grid-cols-3 gap-3 border-t border-[var(--rd-line)] pt-5">
               {[
                 [
                   String(demo?.verifiedCount ?? reviews.length),
-                  "paid reviews on the wall",
+                  "paid reviews",
                 ],
-                ["0", "disputed charges in demo"],
-                [String(threats.length), "open impersonation threats"],
+                ["0", "disputed"],
+                [String(threats.length), "open threats"],
               ].map(([n, label]) => (
                 <div key={label}>
-                  <dt className="font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--rd-forest)]">
+                  <dt className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--rd-forest)] lg:text-3xl">
                     {n}
                   </dt>
-                  <dd className="mt-1 text-xs leading-snug text-[var(--rd-muted)]">
+                  <dd className="mt-0.5 text-xs text-[var(--rd-muted)]">
                     {label}
                   </dd>
                 </div>
@@ -170,7 +170,7 @@ export function LandingHome({ demo }: { demo: LandingDemo | null }) {
             </dl>
           </Reveal>
 
-          <Reveal delay={120} className="min-w-0" id="live-product">
+          <Reveal delay={80} className="min-w-0" id="live-product">
             {brand ? (
               <ProductStage brand={brand} reviews={reviews} threats={threats} />
             ) : (

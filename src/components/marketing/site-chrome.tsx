@@ -11,7 +11,7 @@ const links = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--rd-line)]/70 bg-white/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <BrandMark />
         <nav className="hidden items-center gap-7 text-sm font-medium text-[var(--rd-forest)] md:flex">
           {links.map((l) => (
@@ -36,7 +36,7 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="border-t border-[var(--rd-line)] bg-[var(--rd-ink)] text-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-start md:justify-between">
+      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm space-y-3">
           <BrandMark className="text-white [&_span]:text-white" href="/" />
           <p className="font-[family-name:var(--font-display)] text-2xl font-semibold leading-tight">
