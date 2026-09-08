@@ -21,7 +21,7 @@ export default async function EmbedPage({
   });
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div className="bg-white p-4">
       <p className="mb-4 text-sm font-semibold text-[var(--rd-forest)]">
         {brand.name} · Verified proof
       </p>

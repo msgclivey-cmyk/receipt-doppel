@@ -27,6 +27,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -51,6 +52,59 @@ body {
   background:
     radial-gradient(ellipse 60% 50% at 70% 40%, rgba(11, 92, 69, 0.12), transparent 60%),
     radial-gradient(ellipse 40% 35% at 20% 80%, rgba(11, 92, 69, 0.06), transparent 55%);
+}
+
+.rd-hero {
+  background: #fbfcfb;
+}
+
+.rd-mesh {
+  pointer-events: none;
+  position: absolute;
+  inset: -20% -10% auto;
+  height: 70%;
+  background:
+    radial-gradient(ellipse 50% 60% at 70% 30%, rgba(11, 92, 69, 0.14), transparent 62%),
+    radial-gradient(ellipse 40% 50% at 12% 80%, rgba(11, 92, 69, 0.08), transparent 58%);
+  animation: rd-mesh 18s ease-in-out infinite;
+}
+
+.rd-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rd-reveal-on {
+  opacity: 1;
+  transform: none;
+}
+
+.rd-stage-panel {
+  animation: rd-panel 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes rd-mesh {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scale(1.06);
+  }
+}
+
+@keyframes rd-panel {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes rd-float {
@@ -90,11 +144,37 @@ body {
   animation: rd-fade-up 0.85s ease-out 0.28s both;
 }
 
+.rd-lift {
+  transition: transform 0.3s ease;
+}
+
+.rd-lift:hover {
+  transform: translateY(-4px);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .rd-float,
   .rd-fade-up,
   .rd-fade-up-delay,
-  .rd-fade-up-delay-2 {
+  .rd-fade-up-delay-2,
+  .rd-mesh,
+  .rd-stage-panel {
     animation: none;
+  }
+
+  .rd-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .rd-lift,
+  .rd-lift:hover {
+    transform: none;
+    transition: none;
   }
 }

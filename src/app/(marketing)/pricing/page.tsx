@@ -145,7 +145,7 @@ export default function PricingPage() {
           </div>
           <div className="text-center">
             <Button asChild>
-              <Link href="/signup">Start free proof wall</Link>
+              <Link href="/signup">Publish my wall</Link>
             </Button>
             <p className="mt-2 text-xs text-[var(--rd-muted)]">
               ✓ No credit card required

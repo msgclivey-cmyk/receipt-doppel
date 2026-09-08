@@ -15,9 +15,9 @@ const display = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Receipt Doppel — Proof that paid. Protection that takes down fakes.",
+  title: "Receipt Doppel — If they didn't pay, they don't speak for your brand.",
   description:
-    "Payment-bound testimonials and brand impersonation defense in one trust product.",
+    "Bind every testimonial to a real Stripe or Paddle charge. Publish a proof wall buyers can audit. Hunt lookalike shops stealing your name.",
 };
 
 export default function RootLayout({
