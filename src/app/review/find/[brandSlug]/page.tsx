@@ -21,11 +21,11 @@ export default async function FindReviewPage({
         <BrandMark className="justify-center" href={`/proof/${brand.slug}`} />
         <Card>
           <CardHeader>
-            <CardTitle>Leave a review for {brand.name}</CardTitle>
+            <CardTitle>Lost the review email?</CardTitle>
             <p className="text-sm text-[var(--rd-muted)]">
-            Use the email and order number from your receipt only if you closed
-            the thank-you page. If they match a paid charge, the same one-sentence
-            form opens. No match, no form.
+              Use the email and order number from your receipt. If they match a
+              paid charge that is ready, the same one-sentence form opens. Too
+              soon, or no match — no form.
             </p>
           </CardHeader>
           <CardContent>

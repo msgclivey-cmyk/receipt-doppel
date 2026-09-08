@@ -108,6 +108,8 @@ async function main() {
         customerName: authorName,
         status: "paid",
         paidAt: createdAt,
+        askAfterAt: createdAt,
+        lastReviewEmailAt: createdAt,
         createdAt,
       },
     });

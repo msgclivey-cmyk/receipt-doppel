@@ -25,11 +25,14 @@ export default async function ReviewPage({
         <Card>
           <CardHeader>
             <CardTitle>
-              {invite ? `Thanks, ${invite.charge.customerName.split(" ")[0]}.` : "Thanks."}
+              {invite
+                ? `You've had time with ${invite.brand.name}, ${invite.charge.customerName.split(" ")[0]}.`
+                : "You've had time with this order."}
             </CardTitle>
             <p className="text-sm text-[var(--rd-muted)]">
-              Payment went through. One sentence for the next buyer — or skip.
-              This is not another account. It sits on the receipt you already paid.
+              One sentence for the next buyer — after using it, not at checkout.
+              Skip if you would rather not. This is not another account. It sits
+              on the receipt you already paid.
             </p>
           </CardHeader>
           <CardContent>

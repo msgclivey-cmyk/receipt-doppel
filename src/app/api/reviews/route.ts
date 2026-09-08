@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
   chargeAllowsReview,
+  chargeReviewTooSoon,
   findInviteByToken,
   initialsFromName,
   inviteBlockReason,
@@ -118,7 +119,8 @@ export async function PUT(req: Request) {
         { status: 404 },
       );
     }
-    const blocked = chargeAllowsReview(charge);
+    const blocked =
+      chargeAllowsReview(charge) || chargeReviewTooSoon(charge);
     if (blocked) {
       return NextResponse.json({ error: blocked }, { status: 409 });
     }

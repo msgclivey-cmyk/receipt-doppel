@@ -22,6 +22,7 @@ type Brand = {
   paymentProvider: string | null;
   paymentConnected: boolean;
   paymentAccountId: string | null;
+  reviewAskAfterDays: number;
 };
 
 export function SettingsClient({
@@ -46,12 +47,13 @@ export function SettingsClient({
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: fd.get("name"),
-          domain: fd.get("domain"),
-          tagline: fd.get("tagline"),
-          industry: fd.get("industry"),
-          protectionActive: local.protectionActive,
-        }),
+                  name: fd.get("name"),
+                  domain: fd.get("domain"),
+                  tagline: fd.get("tagline"),
+                  industry: fd.get("industry"),
+                  protectionActive: local.protectionActive,
+                  reviewAskAfterDays: Number(fd.get("reviewAskAfterDays")),
+                }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -110,8 +112,9 @@ export function SettingsClient({
           Settings
         </h1>
         <p className="mt-1 text-[var(--rd-muted)]">
-          Demo payment connect, brand profile, and embed codes. Review collection
-          happens on the thank-you page after a paid order — not as a separate chore.
+          Demo payment connect, brand profile, and embed codes. Reviews are
+          asked after the buyer has used the product — never on the checkout
+          thank-you page.
         </p>
       </div>
 
@@ -124,7 +127,7 @@ export function SettingsClient({
             <CardTitle>Payment connect (demo)</CardTitle>
             <p className="text-sm text-[var(--rd-muted)]">
               No real Stripe or Paddle secrets. Connect stores a demo account so
-              you can create a thank-you page for a paid order.
+              you can record a paid order and ask for a review later.
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -200,6 +203,21 @@ export function SettingsClient({
                   <option value="DTC">DTC</option>
                   <option value="SaaS">SaaS</option>
                 </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="reviewAskAfterDays">Days before we ask for a review</Label>
+                <Input
+                  id="reviewAskAfterDays"
+                  name="reviewAskAfterDays"
+                  type="number"
+                  min={0}
+                  max={90}
+                  defaultValue={local.reviewAskAfterDays}
+                />
+                <p className="text-xs text-[var(--rd-muted)]">
+                  0 means you can email the same day — still not at checkout.
+                  Applies to new orders.
+                </p>
               </div>
               <div className="flex items-center justify-between rounded-lg border border-[var(--rd-line)] p-3">
                 <div>

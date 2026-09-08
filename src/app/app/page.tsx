@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TestimonialPublishList } from "@/components/app/testimonial-list";
 import { RequestReviewPanel } from "@/components/app/request-review";
-import { maskEmail } from "@/lib/reviews";
+import { maskEmail, REVIEW_EMAIL_COOLDOWN_MS } from "@/lib/reviews";
 
 export const dynamic = "force-dynamic";
 
@@ -111,12 +111,13 @@ export default async function BrandConsolePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>After they pay</CardTitle>
+          <CardTitle>Ask after they&apos;ve used it</CardTitle>
         </CardHeader>
         <CardContent>
           <RequestReviewPanel
             paymentConnected={brand.paymentConnected}
             provider={brand.paymentProvider}
+            reviewAskAfterDays={brand.reviewAskAfterDays}
             initialCharges={charges.map((charge) => ({
               id: charge.id,
               orderRef: charge.orderRef,
@@ -128,6 +129,17 @@ export default async function BrandConsolePage() {
               status: charge.status,
               hasReview: Boolean(charge.testimonial),
               reviewPublished: charge.testimonial?.published ?? null,
+              askAfterAt: charge.askAfterAt.toISOString(),
+              lastReviewEmailAt: charge.lastReviewEmailAt?.toISOString() ?? null,
+              ready: charge.askAfterAt.getTime() <= Date.now(),
+              asked: Boolean(
+                (charge.invites[0] &&
+                  !charge.invites[0].usedAt &&
+                  charge.invites[0].expiresAt.getTime() > Date.now()) ||
+                  (charge.lastReviewEmailAt &&
+                    Date.now() - charge.lastReviewEmailAt.getTime() <
+                      REVIEW_EMAIL_COOLDOWN_MS),
+              ),
             }))}
           />
         </CardContent>

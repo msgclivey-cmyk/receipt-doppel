@@ -2,6 +2,26 @@ import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "@/lib/db";
 
 export const INVITE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
+export const MS_DAY = 1000 * 60 * 60 * 24;
+export const REVIEW_EMAIL_COOLDOWN_MS = MS_DAY * 7;
+
+export function clampAskAfterDays(days: unknown) {
+  const n = Number(days);
+  if (!Number.isFinite(n)) return 7;
+  return Math.max(0, Math.min(90, Math.round(n)));
+}
+
+export function computeAskAfterAt(paidAt: Date, days: number) {
+  return new Date(paidAt.getTime() + clampAskAfterDays(days) * MS_DAY);
+}
+
+export function reviewNotOpenYet(askAfterAt: Date) {
+  return askAfterAt.getTime() > Date.now();
+}
+
+export function daysUntil(date: Date) {
+  return Math.max(0, Math.ceil((date.getTime() - Date.now()) / MS_DAY));
+}
 
 export function appBaseUrl() {
   return (process.env.NEXT_PUBLIC_APP_URL || "http://127.0.0.1:4317").replace(
@@ -65,6 +85,14 @@ export function chargeAllowsReview(charge: {
   return null;
 }
 
+export function chargeReviewTooSoon(charge: { askAfterAt: Date }) {
+  if (!reviewNotOpenYet(charge.askAfterAt)) return null;
+  const days = daysUntil(charge.askAfterAt);
+  return days <= 1
+    ? "This review is not open yet. A quote before you have used the product is not useful."
+    : `This review opens in about ${days} days — after you have had time with the order.`;
+}
+
 export async function findInviteByToken(token: string) {
   const invite = await prisma.reviewInvite.findUnique({
     where: { tokenHash: hashToken(token) },
@@ -84,5 +112,7 @@ export function inviteBlockReason(
   if (invite.expiresAt.getTime() < Date.now()) {
     return "This review link has expired. Ask the brand for a new one, or look up your order.";
   }
-  return chargeAllowsReview(invite.charge);
+  return (
+    chargeReviewTooSoon(invite.charge) || chargeAllowsReview(invite.charge)
+  );
 }
